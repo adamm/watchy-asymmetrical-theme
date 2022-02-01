@@ -112,23 +112,22 @@ void WatchyAsymm::drawSteps() {
     }
     char stepCount[15] = {0};
     sprintf(stepCount, "%d", sensor.getCounter());
-    int16_t curX = 150, curY = 100;
     int16_t x, y;
     uint16_t w, h;
-    display.getTextBounds(stepCount, curX, curY, &x, &y, &w, &h);
-    Serial.printf("bound %s : cursor %dx%d text %dx%d+%d+%d\n", stepCount, curX, curY, x, y, w, h);
+    display.getTextBounds(stepCount, 0, 0, &x, &y, &w, &h);
+    Serial.printf("steps %s : %dx%d+%d+%d\n", stepCount, x, y, w, h);
 
-    curY -= h;
-    curX = 200 - w;
+    int16_t curY = 100 - h + 3;
+    int16_t curX = 200 - w - x;
 
-    display.drawBitmap(curX - 25, curY - 20, steps, 19, 23, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
+    display.drawBitmap(200 - 19, 75 - 23, steps, 19, 23, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.setCursor(curX, curY);
     display.println(stepCount);
 }
 
 void WatchyAsymm::drawBattery() {
-    uint16_t x = 154;
-    uint16_t y = 5;
+    uint16_t x = 163;
+    uint16_t y = 0;
     display.drawBitmap(x, y, battery, 37, 21, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.fillRect(x+5, y+5, 27, BATTERY_SEGMENT_HEIGHT, DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);//clear battery segments
     int8_t batteryLevel = 0;
