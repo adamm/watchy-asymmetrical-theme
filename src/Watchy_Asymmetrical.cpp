@@ -126,26 +126,41 @@ void WatchyAsymm::drawSteps() {
 }
 
 void WatchyAsymm::drawBattery() {
-    uint16_t x = 163;
-    uint16_t y = 0;
+    int16_t x = 163;
+    int16_t y = 0;
     display.drawBitmap(x, y, battery, 37, 21, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     display.fillRect(x+5, y+5, 27, BATTERY_SEGMENT_HEIGHT, DARKMODE ? GxEPD_BLACK : GxEPD_WHITE);//clear battery segments
     int8_t batteryLevel = 0;
     float VBAT = getBatteryVoltage();
-    if(VBAT > 4.1){
+    float maxVBAT = 4.25; // Battery full at 4.25 volts
+    float minVBAT = 2.52; // Battery dead at 2.52 volts
+    float percent = (VBAT-minVBAT) * 100 / (maxVBAT-minVBAT);
+    if (VBAT > 3.8) {        // > 75%
         batteryLevel = 3;
     }
-    else if(VBAT > 3.95 && VBAT <= 4.1){
+    else if (VBAT > 3.38) {  // > 50%
         batteryLevel = 2;
     }
-    else if(VBAT > 3.80 && VBAT <= 3.95){
+    else if (VBAT > 2.95) {  // > 25%
         batteryLevel = 1;
     }
-    else if(VBAT <= 3.80){
+    else {
         batteryLevel = 0;
     }
 
     for(int8_t batterySegments = 0; batterySegments < batteryLevel; batterySegments++){
         display.fillRect(x+5 + (batterySegments * BATTERY_SEGMENT_SPACING), y+5, BATTERY_SEGMENT_WIDTH, BATTERY_SEGMENT_HEIGHT, DARKMODE ? GxEPD_WHITE : GxEPD_BLACK);
     }
+
+    char vbatStr[10] = {0};
+    sprintf(vbatStr, "%2.0f%%%0.2f", percent, VBAT);
+    uint16_t w, h;
+    display.getTextBounds(vbatStr, 0, 0, &x, &y, &w, &h);
+    Serial.printf("steps %s : %dx%d+%d+%d\n", vbatStr, x, y, w, h);
+
+    y = 40;
+    x = 200 - w - x;
+
+    display.setCursor(x, y);
+    display.println(vbatStr);
 }
