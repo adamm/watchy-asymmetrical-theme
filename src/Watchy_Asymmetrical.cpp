@@ -135,16 +135,16 @@ void WatchyAsymm::drawBattery() {
     float maxVBAT = 4.25; // Battery full at 4.25 volts
     float minVBAT = 2.52; // Battery dead at 2.52 volts
     float percent = (VBAT-minVBAT) * 100 / (maxVBAT-minVBAT);
-    if (VBAT > 3.8) {        // > 75%
+    if (VBAT > 3.87) {
         batteryLevel = 3;
     }
-    else if (VBAT > 3.38) {  // > 50%
+    else if (VBAT > 3.73) {
         batteryLevel = 2;
     }
-    else if (VBAT > 2.95) {  // > 25%
+    else if (VBAT > 3.52) {
         batteryLevel = 1;
     }
-    else {
+    else { // Battery lasts until 2.52V, but it drops like a rock after 3.52V
         batteryLevel = 0;
     }
 
